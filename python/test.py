@@ -46,12 +46,8 @@ def main():
 
     # split the dataset
     x_train, x_test, y_train, y_test = train_test_split(x, yy, test_size=0.2, random_state=42)
-    """
     num_rows = 40
     num_columns = 174
-    """
-    num_rows = 5
-    num_columns = 8
     num_channels = 1
 
     # print(x_train.shape)
@@ -66,11 +62,11 @@ def main():
     model.add(Conv2D(filters=16, kernel_size=2, input_shape=(num_rows, num_columns, num_channels), activation='relu'))
     model.add(MaxPooling2D(pool_size=2))
     model.add(Dropout(0.2))
-    """
+
     model.add(Conv2D(filters=32, kernel_size=2, activation='relu'))
     model.add(MaxPooling2D(pool_size=2))
     model.add(Dropout(0.2))
-    
+    """
     model.add(Conv2D(filters=64, kernel_size=2, activation='relu'))
     model.add(MaxPooling2D(pool_size=2))
     model.add(Dropout(0.2))
@@ -118,16 +114,18 @@ def main():
 
 
 def extract_features(file_name):
+    max_pad_len = 174
     try:
         audio, sample_rate = librosa.load(file_name, res_type='kaiser_fast')
         mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40)
-        mfccsscaled = np.mean(mfccs.T, axis=0)
+        pad_width = max_pad_len - mfccs.shape[1]
+        mfccs = np.pad(mfccs, pad_width=((0, 0), (0, pad_width)), mode='constant')
 
     except Exception as e:
         print("Error encountered while parsing file: ", file_name)
         return None
 
-    return mfccsscaled
+    return mfccs
 
 
 def class_name(file):
