@@ -57,7 +57,7 @@ def main():
     num_labels = yy.shape[1]
     filter_size = 2
 
-    # Construct model
+    # Construct modelas
     model = Sequential()
     model.add(Conv2D(filters=16, kernel_size=2, input_shape=(num_rows, num_columns, num_channels), activation='relu'))
     model.add(MaxPooling2D(pool_size=2))
