@@ -95,7 +95,7 @@ def main():
     num_epochs = 72
     num_batch_size = 256
 
-    checkpointer = ModelCheckpoint(filepath='saved_models/weights.best.basic_cnn.hdf5',
+    checkpointer = ModelCheckpoint(filepath='saved_models/weights.best.basic_cnn_new.hdf5',
                                    verbose=1, save_best_only=True)
     start = datetime.now()
 
