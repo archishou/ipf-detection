@@ -134,6 +134,6 @@ def class_name(file):
     if file.startswith("healthy"):
         return "not_ipf"
     if file.startswith("copd"):
-        return "not_ipf"
+        return "copd"
 if __name__ == '__main__':
     main()
