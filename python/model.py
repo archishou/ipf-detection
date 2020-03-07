@@ -3,7 +3,6 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 from keras.utils import to_categorical
 import pandas as pd
-import numpy as np
 from keras.callbacks import ModelCheckpoint
 from datetime import datetime
 import os
@@ -11,13 +10,9 @@ import librosa
 import librosa.display
 import numpy as np
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation, Flatten
-from keras.layers import Convolution2D, Conv2D, MaxPooling2D, GlobalAveragePooling2D
-from keras.optimizers import Adam
-from keras.utils import np_utils
-from sklearn import metrics
+from keras.layers import Dense, Dropout
+from keras.layers import Conv2D, MaxPooling2D, GlobalAveragePooling2D
 
-from python.helpers.wavhelper import WavFileHelper
 
 data_set = "/Users/Archish/Documents/CodeProjects/Python/IPF/datafiles/all_data"
 
