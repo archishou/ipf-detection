@@ -66,11 +66,11 @@ def main():
     model.add(Conv2D(filters=32, kernel_size=2, activation='relu'))
     model.add(MaxPooling2D(pool_size=2))
     model.add(Dropout(0.2))
-    """
+
     model.add(Conv2D(filters=64, kernel_size=2, activation='relu'))
     model.add(MaxPooling2D(pool_size=2))
     model.add(Dropout(0.2))
-
+    """
     model.add(Conv2D(filters=128, kernel_size=2, activation='relu'))
     model.add(MaxPooling2D(pool_size=2))
     model.add(Dropout(0.2))
@@ -95,7 +95,7 @@ def main():
     num_epochs = 72
     num_batch_size = 256
 
-    checkpointer = ModelCheckpoint(filepath='saved_models/weights.best.basic_cnn_new.hdf5',
+    checkpointer = ModelCheckpoint(filepath='saved_models/weights.best.basic_cnn.hdf5',
                                    verbose=1, save_best_only=True)
     start = datetime.now()
 
