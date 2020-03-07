@@ -8,6 +8,7 @@ import os
 import librosa
 import librosa.display
 import numpy as np
+from keras.utils import plot_model
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.layers import Conv2D, MaxPooling2D, GlobalAveragePooling2D
@@ -63,6 +64,8 @@ def main():
     model.summary()
 
     model.load_weights(model_path)
+
+    # plot_model(model_path, to_file='/Users/Archish/Desktop/model.png')
 
     while True:
         file = input("choose a file: ") + ".wav"
