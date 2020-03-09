@@ -71,19 +71,21 @@ def main():
 
     while True:
         file = input("choose a file: ") + ".wav"
+        try:
+            prediction_feature = extract_features(os.path.join(data_set, file))
+            prediction_feature = prediction_feature.reshape(1, num_rows, num_columns, num_channels)
 
-        prediction_feature = extract_features(os.path.join(data_set, file))
-        prediction_feature = prediction_feature.reshape(1, num_rows, num_columns, num_channels)
+            predicted_vector = model.predict_classes(prediction_feature)
+            predicted_class = le.inverse_transform(predicted_vector)
+            print("The predicted class is:", predicted_class[0], '\n')
 
-        predicted_vector = model.predict_classes(prediction_feature)
-        predicted_class = le.inverse_transform(predicted_vector)
-        print("The predicted class is:", predicted_class[0], '\n')
-
-        predicted_proba_vector = model.predict_proba(prediction_feature)
-        predicted_proba = predicted_proba_vector[0]
-        for i in range(len(predicted_proba)):
-            category = le.inverse_transform(np.array([i]))
-            print(category[0], "\t\t : ", format(predicted_proba[i], '.32f'))
+            predicted_proba_vector = model.predict_proba(prediction_feature)
+            predicted_proba = predicted_proba_vector[0]
+            for i in range(len(predicted_proba)):
+                category = le.inverse_transform(np.array([i]))
+                print(category[0], "\t\t : ", format(predicted_proba[i], '.32f'))
+        except AttributeError:
+            print("File not found.")
 
 
 def class_name(file):
