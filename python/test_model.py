@@ -16,7 +16,7 @@ for item in path_list[0:-2]:
     ipf = os.path.join(ipf, item)
 print(ipf)
 data_set = os.path.join(ipf, 'datafiles', 'all_data')
-model_path = os.path.join(ipf, 'python', 'saved_models', 'weights.best.cnn.hdf5')
+model_path = os.path.join(ipf, 'python', 'saved_models', 'weights.best.new_model.hdf5')
 
 
 def main():
@@ -24,7 +24,7 @@ def main():
     for file in os.listdir(data_set):
         if file.endswith(".wav"):
             # print(file)
-            class_label = class_name(file)
+            class_label = class_name_new(file)
             data_file = os.path.join(data_set, file)
             data = extract_features(data_file)
             features.append([data, class_label])
@@ -95,6 +95,15 @@ def class_name(file):
         return "not_ipf"
     if file.startswith("copd"):
         return "not_ipf"
+
+
+def class_name_new(file):
+    if file.startswith("ipf"):
+        return "ipf"
+    if file.startswith("healthy"):
+        return "healthy"
+    if file.startswith("copd"):
+        return "copd"
 
 
 def extract_features(file_name):
