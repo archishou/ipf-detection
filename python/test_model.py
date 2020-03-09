@@ -14,6 +14,7 @@ path_list = path.split(os.sep)
 ipf = os.sep
 for item in path_list[0:-2]:
     ipf = os.path.join(ipf, item)
+print(ipf)
 data_set = os.path.join(ipf, 'datafiles', 'all_data')
 model_path = os.path.join(ipf, 'python', 'saved_models', 'weights.best.cnn.hdf5')
 
