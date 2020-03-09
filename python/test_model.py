@@ -16,7 +16,7 @@ for item in path_list[0:-2]:
     ipf = os.path.join(ipf, item)
 print(ipf)
 data_set = os.path.join(ipf, 'datafiles', 'all_data')
-model_path = os.path.join(ipf, 'python', 'saved_models', 'weights.best.new_model.hdf5')
+model_path = os.path.join(ipf, 'python', 'saved_models', 'weights.best.new_model_1.hdf5')
 
 
 def main():
@@ -58,6 +58,13 @@ def main():
     model.add(MaxPooling2D(pool_size=2))
     model.add(Dropout(0.2))
 
+    model.add(Conv2D(filters=64, kernel_size=2, activation='relu'))
+    model.add(MaxPooling2D(pool_size=2))
+    model.add(Dropout(0.2))
+
+    model.add(Conv2D(filters=128, kernel_size=2, activation='relu'))
+    model.add(MaxPooling2D(pool_size=2))
+    model.add(Dropout(0.2))
     model.add(GlobalAveragePooling2D())
 
     model.add(Dense(num_labels, activation='softmax'))
