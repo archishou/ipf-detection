@@ -1,15 +1,11 @@
 from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import train_test_split
 from keras.utils import to_categorical
 import pandas as pd
-from keras.callbacks import ModelCheckpoint
-from datetime import datetime
 import os
 import sys
 import librosa
 import librosa.display
 import numpy as np
-from keras.utils import plot_model
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.layers import Conv2D, MaxPooling2D, GlobalAveragePooling2D
