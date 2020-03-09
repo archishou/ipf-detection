@@ -9,11 +9,13 @@ import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.layers import Conv2D, MaxPooling2D, GlobalAveragePooling2D
-path = os.path.normpath(sys.argv[0])
+path = os.path.normpath(os.path.abspath(sys.argv[0]))
 path_list = path.split(os.sep)
 ipf = os.sep
 for item in path_list[0:-2]:
     ipf = os.path.join(ipf, item)
+print(path_list)
+print(path)
 print(ipf)
 data_set = os.path.join(ipf, 'datafiles', 'all_data')
 model_path = os.path.join(ipf, 'python', 'saved_models', 'weights.best.cnn.hdf5')
