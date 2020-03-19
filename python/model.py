@@ -42,21 +42,9 @@ def main():
             pitch_5 = extract_features(augment_pitch(audio, sample_rate, -2), sample_rate)
             pitch_6 = extract_features(augment_pitch(audio, sample_rate, -3), sample_rate)
 
-            features.append([raw_data, class_label])
-
-            features.append([shift_1, class_label])
-            features.append([shift_2, class_label])
-            features.append([shift_3, class_label])
-            features.append([shift_4, class_label])
-            features.append([shift_5, class_label])
-            features.append([shift_6, class_label])
-
-            features.append([pitch_1, class_label])
-            features.append([pitch_2, class_label])
-            features.append([pitch_3, class_label])
-            features.append([pitch_4, class_label])
-            features.append([pitch_5, class_label])
-            features.append([pitch_6, class_label])
+            features = append_features(features, class_label, raw_data,
+                                       shift_1, shift_2, shift_3, shift_4, shift_5, shift_6,
+                                       pitch_1, pitch_2, pitch_3, pitch_4, pitch_5, pitch_6)
 
     # Convert into a Panda dataframe
     featuresdf = pd.DataFrame(features, columns=['feature', 'class_label'])
@@ -120,7 +108,7 @@ def main():
     num_epochs = 72
     num_batch_size = 256
 
-    checkpointer = ModelCheckpoint(filepath='saved_models/weights.best.new_model_data_aug_1.hdf5',
+    checkpointer = ModelCheckpoint(filepath='saved_models/weights.best.new_model_data_aug_2.hdf5',
                                    verbose=1, save_best_only=True)
     start = datetime.now()
 
@@ -178,6 +166,12 @@ def augment_pitch(data, sampling_rate, pitch_factor):
 
 def augment_speed(data, speed_factor):
     return librosa.effects.time_stretch(data, speed_factor)
+
+
+def append_features(features, label, *augmented_data):
+    for d in augmented_data:
+        features.append([d, label])
+    return features
 
 
 def class_name(file):
