@@ -26,18 +26,37 @@ def main():
             audio, sample_rate = load_audio(data_file)
 
             raw_data = extract_features(audio, sample_rate)
-            shift_1 = augment_shift(audio, sample_rate, 1, 'both')
-            shift_2 = augment_shift(audio, sample_rate, 2, 'both')
-            shift_3 = augment_shift(audio, sample_rate, 3, 'both')
-            pitch_1 = augment_pitch(audio, sample_rate, 1)
-            pitch_2 = augment_pitch(audio, sample_rate, 2)
-            pitch_3 = augment_pitch(audio, sample_rate, -1)
-            pitch_4 = augment_pitch(audio, sample_rate, -2)
-            speed_1 = augment_speed(audio, 0.95)
-            speed_2 = augment_speed(audio, 0.90)
-            speed_3 = augment_speed(audio, 1.05)
-            speed_4 = augment_speed(audio, 1.10)
+
+            shift_1 = extract_features(augment_shift(audio, sample_rate, 1, 'both'), sample_rate)
+            shift_2 = extract_features(augment_shift(audio, sample_rate, 2, 'both'), sample_rate)
+            shift_3 = extract_features(augment_shift(audio, sample_rate, 3, 'both'), sample_rate)
+            shift_4 = extract_features(augment_shift(audio, sample_rate, 4, 'both'), sample_rate)
+            shift_5 = extract_features(augment_shift(audio, sample_rate, 5, 'both'), sample_rate)
+            shift_6 = extract_features(augment_shift(audio, sample_rate, 6, 'both'), sample_rate)
+
+            pitch_1 = extract_features(augment_pitch(audio, sample_rate, 1), sample_rate)
+            pitch_2 = extract_features(augment_pitch(audio, sample_rate, 2), sample_rate)
+            pitch_3 = extract_features(augment_pitch(audio, sample_rate, 3), sample_rate)
+
+            pitch_4 = extract_features(augment_pitch(audio, sample_rate, -1), sample_rate)
+            pitch_5 = extract_features(augment_pitch(audio, sample_rate, -2), sample_rate)
+            pitch_6 = extract_features(augment_pitch(audio, sample_rate, -3), sample_rate)
+
             features.append([raw_data, class_label])
+
+            features.append([shift_1, class_label])
+            features.append([shift_2, class_label])
+            features.append([shift_3, class_label])
+            features.append([shift_4, class_label])
+            features.append([shift_5, class_label])
+            features.append([shift_6, class_label])
+
+            features.append([pitch_1, class_label])
+            features.append([pitch_2, class_label])
+            features.append([pitch_3, class_label])
+            features.append([pitch_4, class_label])
+            features.append([pitch_5, class_label])
+            features.append([pitch_6, class_label])
 
     # Convert into a Panda dataframe
     featuresdf = pd.DataFrame(features, columns=['feature', 'class_label'])
@@ -101,7 +120,7 @@ def main():
     num_epochs = 72
     num_batch_size = 256
 
-    checkpointer = ModelCheckpoint(filepath='saved_models/weights.best.new_model_data_aug.hdf5',
+    checkpointer = ModelCheckpoint(filepath='saved_models/weights.best.new_model_data_aug_1.hdf5',
                                    verbose=1, save_best_only=True)
     start = datetime.now()
 
@@ -168,5 +187,6 @@ def class_name(file):
         return "healthy"
     if file.startswith("copd"):
         return "copd"
+
 if __name__ == '__main__':
     main()
