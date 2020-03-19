@@ -74,8 +74,6 @@ def main():
 
     model.load_weights(model_path)
 
-    # plot_model(model_path, to_file='/Users/Archish/Desktop/model.png')
-
     while True:
         file = input("choose a file: ") + ".wav"
         try:
@@ -93,16 +91,6 @@ def main():
                 print(category[0], "\t\t : ", format(predicted_proba[i], '.32f'))
         except AttributeError:
             print("File not found.")
-
-
-def class_name(file):
-    if file.startswith("ipf"):
-        return "ipf"
-    if file.startswith("healthy"):
-        return "not_ipf"
-    if file.startswith("copd"):
-        return "not_ipf"
-
 
 def class_name_new(file):
     if file.startswith("ipf"):

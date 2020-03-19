@@ -13,7 +13,6 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.layers import Conv2D, MaxPooling2D, GlobalAveragePooling2D
 
-
 data_set = "/Users/Archish/Documents/CodeProjects/Python/IPF/datafiles/all_data"
 
 
@@ -21,11 +20,24 @@ def main():
     features = []
     for file in os.listdir(data_set):
         if file.endswith(".wav"):
-            #print(file)
             class_label = class_name(file)
             data_file = os.path.join(data_set, file)
-            data = extract_features(data_file)
-            features.append([data, class_label])
+
+            audio, sample_rate = load_audio(data_file)
+
+            raw_data = extract_features(audio, sample_rate)
+            shift_1 = augment_shift(audio, sample_rate, 1, 'both')
+            shift_2 = augment_shift(audio, sample_rate, 2, 'both')
+            shift_3 = augment_shift(audio, sample_rate, 3, 'both')
+            pitch_1 = augment_pitch(audio, sample_rate, 1)
+            pitch_2 = augment_pitch(audio, sample_rate, 2)
+            pitch_3 = augment_pitch(audio, sample_rate, -1)
+            pitch_4 = augment_pitch(audio, sample_rate, -2)
+            speed_1 = augment_speed(audio, 0.95)
+            speed_2 = augment_speed(audio, 0.90)
+            speed_3 = augment_speed(audio, 1.05)
+            speed_4 = augment_speed(audio, 1.10)
+            features.append([raw_data, class_label])
 
     # Convert into a Panda dataframe
     featuresdf = pd.DataFrame(features, columns=['feature', 'class_label'])
@@ -89,7 +101,7 @@ def main():
     num_epochs = 72
     num_batch_size = 256
 
-    checkpointer = ModelCheckpoint(filepath='saved_models/weights.best.new_model_1.hdf5',
+    checkpointer = ModelCheckpoint(filepath='saved_models/weights.best.new_model_data_aug.hdf5',
                                    verbose=1, save_best_only=True)
     start = datetime.now()
 
@@ -107,19 +119,46 @@ def main():
     print("Testing Accuracy: ", score[1])
 
 
-def extract_features(file_name):
+def extract_features(audio, sample_rate):
     max_pad_len = 174
+    mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40)
+    pad_width = max_pad_len - mfccs.shape[1]
+    mfccs = np.pad(mfccs, pad_width=((0, 0), (0, pad_width)), mode='constant')
+
+    return mfccs
+
+
+def load_audio(file_name):
     try:
         audio, sample_rate = librosa.load(file_name, res_type='kaiser_fast')
-        mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40)
-        pad_width = max_pad_len - mfccs.shape[1]
-        mfccs = np.pad(mfccs, pad_width=((0, 0), (0, pad_width)), mode='constant')
-
+        return audio, sample_rate
     except Exception as e:
         print("Error encountered while parsing file: ", file_name)
         return None
 
-    return mfccs
+
+def augment_shift(data, sampling_rate, shift_max, shift_direction):
+    shift = np.random.randint(sampling_rate * shift_max)
+    if shift_direction == 'right':
+        shift = -shift
+    elif shift_direction == 'both':
+        direction = np.random.randint(0, 2)
+        if direction == 1:
+            shift = -shift
+    augmented_data = np.roll(data, shift)
+    if shift > 0:
+        augmented_data[:shift] = 0
+    else:
+        augmented_data[shift:] = 0
+    return augmented_data
+
+
+def augment_pitch(data, sampling_rate, pitch_factor):
+    return librosa.effects.pitch_shift(data, sampling_rate, pitch_factor)
+
+
+def augment_speed(data, speed_factor):
+    return librosa.effects.time_stretch(data, speed_factor)
 
 
 def class_name(file):
