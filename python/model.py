@@ -37,14 +37,20 @@ def main():
             pitch_1 = extract_features(augment_pitch(audio, sample_rate, 1), sample_rate)
             pitch_2 = extract_features(augment_pitch(audio, sample_rate, 2), sample_rate)
             pitch_3 = extract_features(augment_pitch(audio, sample_rate, 3), sample_rate)
-
-            pitch_4 = extract_features(augment_pitch(audio, sample_rate, -1), sample_rate)
-            pitch_5 = extract_features(augment_pitch(audio, sample_rate, -2), sample_rate)
-            pitch_6 = extract_features(augment_pitch(audio, sample_rate, -3), sample_rate)
+            pitch_4 = extract_features(augment_pitch(audio, sample_rate, 4), sample_rate)
+            pitch_5 = extract_features(augment_pitch(audio, sample_rate, 5), sample_rate)
+            pitch_6 = extract_features(augment_pitch(audio, sample_rate, 6), sample_rate)
+            pitch_7 = extract_features(augment_pitch(audio, sample_rate, -1), sample_rate)
+            pitch_8 = extract_features(augment_pitch(audio, sample_rate, -2), sample_rate)
+            pitch_9 = extract_features(augment_pitch(audio, sample_rate, -3), sample_rate)
+            pitch_10 = extract_features(augment_pitch(audio, sample_rate, -4), sample_rate)
+            pitch_11 = extract_features(augment_pitch(audio, sample_rate, -5), sample_rate)
+            pitch_12 = extract_features(augment_pitch(audio, sample_rate, -6), sample_rate)
 
             features = append_features(features, class_label, raw_data,
                                        shift_1, shift_2, shift_3, shift_4, shift_5, shift_6,
-                                       pitch_1, pitch_2, pitch_3, pitch_4, pitch_5, pitch_6)
+                                       pitch_1, pitch_2, pitch_3, pitch_4, pitch_5, pitch_6,
+                                       pitch_7, pitch_8, pitch_9, pitch_10, pitch_11, pitch_12)
 
     # Convert into a Panda dataframe
     featuresdf = pd.DataFrame(features, columns=['feature', 'class_label'])
@@ -108,7 +114,7 @@ def main():
     num_epochs = 72
     num_batch_size = 256
 
-    checkpointer = ModelCheckpoint(filepath='saved_models/weights.best.new_model_data_aug_3.hdf5',
+    checkpointer = ModelCheckpoint(filepath='saved_models/weights.best.new_model_data_aug_n2.hdf5',
                                    verbose=1, save_best_only=True)
     start = datetime.now()
 
