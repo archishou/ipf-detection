@@ -6,6 +6,7 @@ import sys
 import librosa
 import librosa.display
 import numpy as np
+from keras.utils import plot_model
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.layers import Conv2D, MaxPooling2D, GlobalAveragePooling2D
@@ -69,6 +70,8 @@ def main():
 
     model.add(Dense(num_labels, activation='softmax'))
 
+    plot_model(model, to_file='model.png')
+
     # Display model architecture summary
     model.summary()
 
@@ -91,6 +94,7 @@ def main():
                 print(category[0], "\t\t : ", format(predicted_proba[i], '.32f'))
         except AttributeError:
             print("File not found.")
+
 
 def class_name_new(file):
     if file.startswith("ipf"):

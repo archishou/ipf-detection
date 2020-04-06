@@ -7,7 +7,11 @@ from keras.callbacks import ModelCheckpoint
 from datetime import datetime
 import os
 import librosa
+import json
 import librosa.display
+import pickle
+from keras.utils import plot_model
+import matplotlib.pyplot as plt
 import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
@@ -102,6 +106,8 @@ def main():
     # Compile the model
     model.compile(loss='categorical_crossentropy', metrics=['accuracy'], optimizer='adam')
 
+
+
     # Display model architecture summary
     model.summary()
 
@@ -114,11 +120,11 @@ def main():
     num_epochs = 72
     num_batch_size = 256
 
-    checkpointer = ModelCheckpoint(filepath='saved_models/weights.best.new_model_data_aug_n2.hdf5',
+    checkpointer = ModelCheckpoint(filepath='saved_models/weights.best.new_model_data_aug_save_hist.hdf5',
                                    verbose=1, save_best_only=True)
     start = datetime.now()
 
-    model.fit(x_train, y_train, batch_size=num_batch_size, epochs=num_epochs, validation_data=(x_test, y_test),
+    history = model.fit(x_train, y_train, batch_size=num_batch_size, epochs=num_epochs, validation_data=(x_test, y_test),
               callbacks=[checkpointer], verbose=1)
 
     duration = datetime.now() - start
@@ -130,6 +136,24 @@ def main():
 
     score = model.evaluate(x_test, y_test, verbose=0)
     print("Testing Accuracy: ", score[1])
+
+    # save to json:
+    plt.plot(history.history['acc'])
+    plt.plot(history.history['val_acc'])
+    plt.title('Model accuracy')
+    plt.ylabel('Accuracy')
+    plt.xlabel('Epoch')
+    plt.legend(['Train', 'Test'], loc='upper left')
+    plt.show()
+
+    # Plot training & validation loss values
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('Model loss')
+    plt.ylabel('Loss')
+    plt.xlabel('Epoch')
+    plt.legend(['Train', 'Test'], loc='upper left')
+    plt.show()
 
 
 def extract_features(audio, sample_rate):
