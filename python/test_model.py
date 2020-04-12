@@ -6,6 +6,9 @@ import sys
 import librosa
 import librosa.display
 import numpy as np
+import pydot
+import keras
+from keras.utils.vis_utils import model_to_dot
 from keras.utils import plot_model
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
@@ -70,7 +73,7 @@ def main():
 
     model.add(Dense(num_labels, activation='softmax'))
 
-    plot_model(model, to_file='model.png')
+    plot_model(model, to_file='model.png', show_shapes=True, show_layer_names=False)
 
     # Display model architecture summary
     model.summary()
