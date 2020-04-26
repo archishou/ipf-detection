@@ -113,6 +113,7 @@ def main():
 
     # Calculate pre-training accuracy
     score = model.evaluate(x_test, y_test, verbose=1)
+    
     accuracy = 100 * score[1]
 
     print("Pre-training accuracy: %.4f%%" % accuracy)
@@ -213,4 +214,6 @@ def class_name(file):
         return "copd"
 
 if __name__ == '__main__':
+    # Run main method
     main()
+
