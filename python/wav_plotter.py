@@ -2,7 +2,7 @@ from scipy.io import wavfile
 
 import matplotlib.pyplot as plt
 
-filepath = '/Users/Archish/Documents/CodeProjects/Python/IPF/datafiles/all_data/ipf_1.wav'
+filepath = '/Users/Archish/Documents/CodeProjects/Python/IPF/datafiles/all_data/healthy_1.wav'
 
 # Read the wave file to numpy array
 fs,  signal = wavfile.read(filepath)

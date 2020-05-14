@@ -4,6 +4,9 @@ from keras.utils import to_categorical
 import pandas as pd
 from keras.callbacks import ModelCheckpoint
 from datetime import datetime
+import seaborn as sn
+from keras.models import Sequential
+from sklearn.metrics import confusion_matrix
 import os
 import librosa
 import json
@@ -110,7 +113,7 @@ def main():
     num_epochs = 72
     num_batch_size = 256
 
-    checkpointer = ModelCheckpoint(filepath='saved_models/weights.final.hdf5',
+    checkpointer = ModelCheckpoint(filepath='saved_models/weights.final.confusion.hdf5',
                                    verbose=1, save_best_only=True)
     start = datetime.now()
 
@@ -120,7 +123,7 @@ def main():
     hist_df = pd.DataFrame(history.history) 
 
     # save to json:  
-    hist_json_file = 'history.json' 
+    hist_json_file = 'history-confusion.json'
     with open(hist_json_file, mode='w+') as f:
         hist_df.to_json(f)
 
@@ -133,21 +136,33 @@ def main():
     score = model.evaluate(x_test, y_test, verbose=0)
     print("Testing Accuracy: ", score[1])
 
-    plt.plot(history.history['acc'])
-    plt.plot(history.history['val_acc'])
-    plt.title('Model accuracy')
-    plt.ylabel('Accuracy')
-    plt.xlabel('Epoch')
-    plt.legend(['Train', 'Test'], loc='upper left')
+    x_all = np.vstack((x_train, x_test))
+    y_all = np.vstack((y_train, y_test))
+
+    y_pred_np = np.zeros(shape=(len(y_all)))
+    y_train_labels = np.zeros(shape=(len(y_all)))
+    ind = 0
+    for f in x_all:
+        prediction_feature = f.reshape(1, num_rows, num_columns, num_channels)
+        predicted_proba_vector = model.predict_classes(prediction_feature)
+        y_pred_np[ind] = predicted_proba_vector
+        ind = ind + 1
+    ind = 0
+    for label in y_all:
+        if label[0] == 1: y_train_labels[ind] = 0
+        elif label[1] == 1: y_train_labels[ind] = 1
+        elif label[2] == 1: y_train_labels[ind] = 2
+        ind = ind + 1
+    cm = confusion_matrix(y_true=y_train_labels, y_pred=y_pred_np)
+
+    df_cm = pd.DataFrame(cm, index=["COPD", "Healthy", "IPF"], columns=["COPD", "Healthy", "IPF"])
+    # plt.figure(figsize=(10,7))
+    sn.set(font_scale=1.4)  # for label size
+    sn.heatmap(df_cm, annot=True, annot_kws={"size": 16})  # font size
+
     plt.show()
-    
-    plt.plot(history.history['loss'])
-    plt.plot(history.history['val_loss'])
-    plt.title('Model loss')
-    plt.ylabel('Loss')
-    plt.xlabel('Epoch')
-    plt.legend(['Train', 'Test'], loc='upper left')
-    plt.show()
+
+
 
 
 def extract_features(audio, sample_rate):

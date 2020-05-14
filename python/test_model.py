@@ -1,17 +1,18 @@
 from sklearn.preprocessing import LabelEncoder
 from keras.utils import to_categorical
 import pandas as pd
+from sklearn.model_selection import train_test_split
 import os
+from datetime import datetime
 import sys
 import librosa
 import librosa.display
 import numpy as np
-import pydot
-import keras
-from keras.utils.vis_utils import model_to_dot
-from keras.utils import plot_model
+import seaborn as sn
 from keras.models import Sequential
+from sklearn.metrics import confusion_matrix
 from keras.layers import Dense, Dropout
+import matplotlib.pyplot as plt
 from keras.layers import Conv2D, MaxPooling2D, GlobalAveragePooling2D
 path = os.path.normpath(os.path.abspath(sys.argv[0]))
 path_list = path.split(os.sep)
@@ -20,7 +21,7 @@ for item in path_list[0:-2]:
     ipf = os.path.join(ipf, item)
 print(ipf)
 data_set = os.path.join(ipf, 'datafiles', 'all_data')
-model_path = os.path.join(ipf, 'python', 'saved_models', 'weights.best.new_model_1.hdf5')
+model_path = os.path.join(ipf, 'python', 'saved_models', 'weights.final.hdf5')
 
 
 def main():
@@ -41,9 +42,10 @@ def main():
     x = np.array(featuresdf.feature.tolist())
     y = np.array(featuresdf.class_label.tolist())
 
-    # Encode the classification labels
     le = LabelEncoder()
     yy = to_categorical(le.fit_transform(y))
+
+    x_train, x_test, y_train, y_test = train_test_split(x, yy, test_size=0.2, random_state=42)
 
     # split the dataset
     num_rows = 40
@@ -51,6 +53,9 @@ def main():
     num_channels = 1
 
     num_labels = yy.shape[1]
+
+    x_train = x_train.reshape(x_train.shape[0], num_rows, num_columns, num_channels)
+    x_test = x_test.reshape(x_test.shape[0], num_rows, num_columns, num_channels)
 
     # Construct modelas
     model = Sequential()
@@ -73,30 +78,37 @@ def main():
 
     model.add(Dense(num_labels, activation='softmax'))
 
-    plot_model(model, to_file='model.png', show_shapes=True, show_layer_names=False)
+    model.compile(loss='categorical_crossentropy', metrics=['accuracy'], optimizer='adam')
 
-    # Display model architecture summary
     model.summary()
 
     model.load_weights(model_path)
 
-    while True:
-        file = input("choose a file: ") + ".wav"
-        try:
-            prediction_feature = extract_features(os.path.join(data_set, file))
-            prediction_feature = prediction_feature.reshape(1, num_rows, num_columns, num_channels)
+    x_all = np.vstack((x_train, x_test))
+    y_all = np.vstack((y_train, y_test))
 
-            predicted_vector = model.predict_classes(prediction_feature)
-            predicted_class = le.inverse_transform(predicted_vector)
-            print("The predicted class is:", predicted_class[0], '\n')
+    y_pred_np = np.zeros(shape=(len(y_all)))
+    y_train_labels = np.zeros(shape=(len(y_all)))
+    ind = 0
+    for f in x_all:
+        prediction_feature = f.reshape(1, num_rows, num_columns, num_channels)
+        predicted_proba_vector = model.predict_classes(prediction_feature)
+        y_pred_np[ind] = predicted_proba_vector
+        ind = ind + 1
+    ind = 0
+    for label in y_all:
+        if label[0] == 1: y_train_labels[ind] = 0
+        elif label[1] == 1: y_train_labels[ind] = 1
+        elif label[2] == 1: y_train_labels[ind] = 2
+        ind = ind + 1
+    cm = confusion_matrix(y_true=y_train_labels, y_pred=y_pred_np)
 
-            predicted_proba_vector = model.predict_proba(prediction_feature)
-            predicted_proba = predicted_proba_vector[0]
-            for i in range(len(predicted_proba)):
-                category = le.inverse_transform(np.array([i]))
-                print(category[0], "\t\t : ", format(predicted_proba[i], '.32f'))
-        except AttributeError:
-            print("File not found.")
+    df_cm = pd.DataFrame(cm, index=["COPD", "Healthy", "IPF"], columns=["COPD", "Healthy", "IPF"])
+    # plt.figure(figsize=(10,7))
+    sn.set(font_scale=1.4)  # for label size
+    sn.heatmap(df_cm, annot=True, annot_kws={"size": 16})  # font size
+
+    plt.show()
 
 
 def class_name_new(file):
